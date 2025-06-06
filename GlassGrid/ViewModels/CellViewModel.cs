@@ -14,7 +14,7 @@ public class CellViewModel : INotifyPropertyChanged
     private int _number;
     private Color _color;
     private Color _filtercolor;
-    private bool _filterColorEnabled = false;
+    private bool _filterColorEnabled = true;
     private List<Color> _colors = new List<Color>
     {
         Colors.Blue,

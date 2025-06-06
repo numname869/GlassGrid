@@ -65,4 +65,20 @@ public class RankingViewModel : BaseViewModel
         foreach (var r in results)
             AllUserScores.Add(r);
     }
+
+    public ICommand DeleteScoresBySeedAndDifficultyCommand => new RelayCommand(DeleteScoresBySeedAndDifficulty, CanDeleteScores);
+    public string DeleteSeed { get; set; }
+    public DifficultyEnums? DeleteDifficulty { get; set; }
+
+    private bool CanDeleteScores()
+    {
+        return !string.IsNullOrWhiteSpace(DeleteSeed) && DeleteDifficulty.HasValue;
+    }
+
+    private void DeleteScoresBySeedAndDifficulty()
+    {
+        _userService.DeleteScoresBySeedAndDifficulty(_currentUsername, DeleteSeed, DeleteDifficulty.Value);
+        LoadAllUserScores();
+    }
+
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Input;
+using GlassGrid.Models;
 using GlassGrid.ViewModels;
 
 public class LoginViewModel : BaseViewModel
@@ -20,6 +21,16 @@ public class LoginViewModel : BaseViewModel
         // Tworzymy komendy tylko raz, z CanExecute
         LoginCommand = new RelayCommand(Login, CanExecuteAuth);
         RegisterCommand = new RelayCommand(Register, CanExecuteAuth);
+    }
+    private bool _isLoggedIn;
+    public bool IsLoggedIn
+    {
+        get => _isLoggedIn;
+        set
+        {
+            _isLoggedIn = value;
+            OnPropertyChanged(nameof(IsLoggedIn));
+        }
     }
 
     public string Username

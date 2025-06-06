@@ -11,12 +11,12 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using GlassGrid.ViewModels;
+using GlassGrid.Models;
 
 namespace GlassGrid.Views
 {
-   
-        public partial class RankingWindow : Window
+
+    public partial class RankingWindow : Window
         {
             public RankingViewModel ViewModel { get; }
 

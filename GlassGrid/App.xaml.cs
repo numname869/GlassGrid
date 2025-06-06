@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using Microsoft.EntityFrameworkCore;
+using GlassGrid.Models;
 using GlassGrid.Models.Data;
 using GlassGrid.ViewModels;
 using GlassGrid.Views;

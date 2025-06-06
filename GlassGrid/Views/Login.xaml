@@ -5,7 +5,9 @@
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         Background="Black">
-
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Window.Resources>
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -41,6 +43,13 @@
                 Background="#333" Foreground="White" BorderBrush="Gray"
                 Command="{Binding RegisterCommand}"/>
         <Button Content="Continue as Guest" Click="GuestButton_Click" Margin="29,17,141,15" Grid.Row="3" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
+
+        <Button Grid.Row="5" Grid.Column="1" Content="Zmień login" Width="100" Margin="0,1,5,-5" HorizontalAlignment="Right"
+        Background="#333" Foreground="White" BorderBrush="Gray"
+        Command="{Binding ChangeUsernameCommand}"
+        Visibility="{Binding IsLoggedIn, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+
 
         <!-- Komunikat -->
         <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Foreground="White" Text="{Binding Message}" HorizontalAlignment="Center"/>

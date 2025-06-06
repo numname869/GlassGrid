@@ -3,19 +3,33 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Ranking" Height="500" Width="700" Background="Black" WindowStartupLocation="CenterScreen">
 
-    
-    <Grid Margin="10" >
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="99*"/>
-            <ColumnDefinition Width="71*"/>
-        </Grid.ColumnDefinitions>
-        <TabControl Background="Black" Foreground="White" Grid.ColumnSpan="2">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Panel usuwania -->
+            <RowDefinition Height="*"/>
+            <!-- Reszta zawartości -->
+        </Grid.RowDefinitions>
+
+        <!-- Panel do usuwania rekordów -->
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10" Grid.Row="0">
+            <TextBlock Text="Seed do usunięcia:" Foreground="White" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <TextBox Width="150" Text="{Binding DeleteSeed, UpdateSourceTrigger=PropertyChanged}" />
+
+            <TextBlock Text="Trudność do usunięcia:" Foreground="White" VerticalAlignment="Center" Margin="10,0,5,0"/>
+            <ComboBox Width="150" ItemsSource="{Binding Difficulties}" SelectedItem="{Binding DeleteDifficulty}"/>
+
+            <Button Content="Usuń" Command="{Binding DeleteScoresBySeedAndDifficultyCommand}" Margin="10,0,0,0"/>
+        </StackPanel>
+
+        <!-- Główna zawartość -->
+        <TabControl Background="Black" Foreground="White" Grid.Row="1" Grid.ColumnSpan="2">
             <TabItem Header="Twoje najlepsze czasy">
                 <StackPanel Margin="10">
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                        <TextBlock Foreground ="White" Text="Seed:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <TextBlock Foreground="White" Text="Seed:" VerticalAlignment="Center" Margin="0,0,5,0"/>
                         <TextBox Width="150" Text="{Binding FilterSeed1, UpdateSourceTrigger=PropertyChanged}"/>
-                        <TextBlock Foreground ="White" Text="  Difficulty:" VerticalAlignment="Center" Margin="10,0,5,0"/>
+                        <TextBlock Foreground="White" Text="  Difficulty:" VerticalAlignment="Center" Margin="10,0,5,0"/>
                         <ComboBox Width="150" ItemsSource="{Binding Difficulties}" SelectedItem="{Binding FilterDifficulty1}"/>
                         <Button Content="Szukaj" Command="{Binding LoadUserBestScoresCommand}" Margin="10,0,0,0"/>
                     </StackPanel>
@@ -34,9 +48,9 @@
             <TabItem Header="Globalne najlepsze">
                 <StackPanel Margin="10">
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                        <TextBlock Foreground ="White" Text="Seed:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <TextBlock Foreground="White" Text="Seed:" VerticalAlignment="Center" Margin="0,0,5,0"/>
                         <TextBox Width="150" Text="{Binding FilterSeed2, UpdateSourceTrigger=PropertyChanged}"/>
-                        <TextBlock Foreground ="White" Text="  Difficulty:" VerticalAlignment="Center" Margin="10,0,5,0"/>
+                        <TextBlock Foreground="White" Text="  Difficulty:" VerticalAlignment="Center" Margin="10,0,5,0"/>
                         <ComboBox Width="150" ItemsSource="{Binding Difficulties}" SelectedItem="{Binding FilterDifficulty2}"/>
                         <Button Content="Szukaj" Command="{Binding LoadGlobalBestScoresCommand}" Margin="10,0,0,0"/>
                     </StackPanel>
