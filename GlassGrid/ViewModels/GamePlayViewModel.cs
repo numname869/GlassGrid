@@ -15,6 +15,7 @@ using GlassGrid.Views;
 using Microsoft.EntityFrameworkCore;
 
 
+
 namespace GlassGrid.ViewModels
 {
     public class GamePlayViewModel : BaseViewModel
@@ -23,7 +24,7 @@ namespace GlassGrid.ViewModels
         private string _currentseed;
         private GridModel _currentGrid;
         private ObservableCollection<CellViewModel> _gridCells;
-        private string _user = "Guest";
+
         private DifficultyEnums _currentDifficulty;
     
         public IEnumerable<DifficultyEnums> Difficulties => Enum.GetValues(typeof(DifficultyEnums)).Cast<DifficultyEnums>();
@@ -31,10 +32,22 @@ namespace GlassGrid.ViewModels
         private readonly IEFUserService _userService;
         private readonly GlassGridContext _context;
 
+      
+
         public GamePlayViewModel(IEFUserService userService, GlassGridContext context)
         {
             _userService = userService;
             _context = context;
+
+            // Subskrybujemy zmianę Username z UserSession
+            UserSession.Instance.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(UserSession.Username))
+                {
+                    OnPropertyChanged(nameof(CurrentUser));
+                    OnPropertyChanged(nameof(IsLoggedIn));
+                }
+            };
         }
 
 
@@ -62,18 +75,7 @@ namespace GlassGrid.ViewModels
                 }
             }
         }
-        public string CurrentUser
-        {
-            get => _user;
-            set
-            {
-                if (_user != value)
-                {
-                    _user = value;
-                    OnPropertyChanged(nameof(CurrentUser));
-                }
-            }
-        }
+  
 
         #region . Grid
         public SolidColorBrush FilterColor
@@ -154,8 +156,36 @@ namespace GlassGrid.ViewModels
 
 
         public ICommand GenerateSeedForNewGame => new RelayCommand(() => GenerateSeed(), () => true);
+        public void GenerateSeed()
+        {
+            string seed = Guid.NewGuid().ToString();
+            Seed = seed;
+
+        }
 
         public ICommand CellCLicked => new RelayCommand<CellViewModel>(OneCellClicked);
+
+
+        private async void OneCellClicked(object obj)
+        {
+            if (obj is CellViewModel cell)
+            {
+                cell.Number = (cell.Number + 1) % 10;
+                var index = cell.IndexInGrid;
+                var oldColor = CurrentGrid.Cells[index].Item2;
+                CurrentGrid.Cells[index] = (cell.Number, oldColor);
+
+                CurrentGrid.IsGridComplete = CurrentGrid.CheckColorGroups();
+                if (CurrentGrid.IsGridComplete)
+                {
+                    StopTimer();
+                    GameStatus = "Grid is complete!";
+
+                    var elapsedTime = TimeSpan.Parse(TimerText);
+                    _userService.SaveScore(CurrentUser, elapsedTime, Seed, CurrentDifficulty);
+                }
+            }
+        }
         public ICommand NewGame => new RelayCommand(() =>
         {
             CurrentGrid = new GridModel(CurrentDifficulty, Seed);
@@ -171,13 +201,12 @@ namespace GlassGrid.ViewModels
         });
 
 
-
-        public void GenerateSeed()
+        public ICommand OpenChangeDataWindowCommand => new RelayCommand(() =>
         {
-            string seed = Guid.NewGuid().ToString();
-            Seed = seed;
-          
-        }
+            var changeDataWindow = new ChangeUserData(_userService);
+            changeDataWindow.ShowDialog();
+        });
+
         private void ToggleFilter()
         {
             foreach (var cell in GridCells)
@@ -197,34 +226,7 @@ namespace GlassGrid.ViewModels
         }
 
 
-        private async void OneCellClicked(object obj)
-        {
-            if (obj is CellViewModel cell)
-            {
-                cell.Number = (cell.Number + 1) % 10;
-                var index = cell.IndexInGrid;
-                var oldColor = CurrentGrid.Cells[index].Item2;
-                CurrentGrid.Cells[index] = (cell.Number, oldColor);
-
-                CurrentGrid.IsGridComplete = CurrentGrid.CheckColorGroups();
-                if (CurrentGrid.IsGridComplete)
-                {
-                    StopTimer();
-                    GameStatus = "Grid is complete!";
-
-                    var elapsedTime = TimeSpan.Parse(TimerText);
-                   _userService.SaveScore(CurrentUser, elapsedTime, Seed, CurrentDifficulty);
-                }
-            }
-        }
-
-
-
-
         #endregion
-
-
-
         #region . Timer
 
         private DispatcherTimer _timer;
@@ -241,7 +243,6 @@ namespace GlassGrid.ViewModels
                 OnPropertyChanged(nameof(TimerText));
             }
         }
-
         public string GameStatus
         {
             get => _gameStatus;
@@ -275,6 +276,33 @@ namespace GlassGrid.ViewModels
             _timer?.Stop();
         }
 
-        #endregion 
+        #endregion
+        #region . User
+
+
+
+        // Usuń:
+        // private string _user = "Guest";
+
+        public bool IsLoggedIn => UserSession.Instance.IsLoggedIn;
+
+        public string CurrentUser
+        {
+            get => UserSession.Instance.Username;
+            set
+            {
+                if (UserSession.Instance.Username != value)
+                {
+                    UserSession.Instance.Username = value;
+                    OnPropertyChanged(nameof(CurrentUser));
+                    OnPropertyChanged(nameof(IsLoggedIn));
+                }
+            }
+        }
+
+
+
+
+        #endregion
     }
 }

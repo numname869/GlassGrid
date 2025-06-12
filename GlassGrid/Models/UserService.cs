@@ -32,6 +32,7 @@ namespace GlassGrid.Models
         void DeleteScoresBySeedAndDifficulty(string currentUsername, string deleteSeed, DifficultyEnums value);
 
         bool UpdateUsername(string oldUsername, string newUsername);
+        bool UpdatePassword(string currentUsername, string oldPassword, string newPassword);
     }
 
 
@@ -154,6 +155,27 @@ namespace GlassGrid.Models
             return true;
         }
 
+
+        public bool UpdatePassword(string username, string oldPassword, string newPassword)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            if (user == null || !BCrypt.Net.BCrypt.Verify(oldPassword, user.PasswordHash))
+                return false; 
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            _context.SaveChanges();
+            return true;
+
+        }
+
+        public bool UpdateUserName(string oldUsername, string newUsername)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Username == oldUsername);
+            if (user == null || !IsUsernameAvailable(newUsername))
+                return false;
+            user.Username = newUsername;
+            _context.SaveChanges();
+            return true;
+        }
     }
 
 }

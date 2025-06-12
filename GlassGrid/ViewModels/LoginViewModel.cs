@@ -8,8 +8,8 @@ public class LoginViewModel : BaseViewModel
     private string _username;
     private string _password;
     private string _message;
+    
 
-    // Event informujący o udanym logowaniu (przekazuje nazwę użytkownika)
     public event Action<string> UserLoggedIn;
 
     private readonly IEFUserService _userService;
@@ -18,11 +18,11 @@ public class LoginViewModel : BaseViewModel
     {
         _userService = userService;
 
-        // Tworzymy komendy tylko raz, z CanExecute
+       
         LoginCommand = new RelayCommand(Login, CanExecuteAuth);
         RegisterCommand = new RelayCommand(Register, CanExecuteAuth);
     }
-    private bool _isLoggedIn;
+    private bool _isLoggedIn = false;
     public bool IsLoggedIn
     {
         get => _isLoggedIn;
@@ -43,7 +43,7 @@ public class LoginViewModel : BaseViewModel
                 _username = value;
                 OnPropertyChanged();
 
-                // Po każdej zmianie powiadamiamy komendy o odświeżeniu stanu
+                
                 LoginCommand.RaiseCanExecuteChanged();
                 RegisterCommand.RaiseCanExecuteChanged();
             }
@@ -60,7 +60,7 @@ public class LoginViewModel : BaseViewModel
                 _password = value;
                 OnPropertyChanged();
 
-                // Po każdej zmianie hasła odświeżamy CanExecute komend
+               
                 LoginCommand.RaiseCanExecuteChanged();
                 RegisterCommand.RaiseCanExecuteChanged();
             }
@@ -80,11 +80,11 @@ public class LoginViewModel : BaseViewModel
         }
     }
 
-    // RelayCommand zamiast ICommand, aby mieć dostęp do RaiseCanExecuteChanged()
+ 
     public RelayCommand LoginCommand { get; }
     public RelayCommand RegisterCommand { get; }
 
-    // Określa, czy pola nie są puste
+
     private bool CanExecuteAuth()
     {
         return !string.IsNullOrWhiteSpace(Username)
@@ -97,6 +97,7 @@ public class LoginViewModel : BaseViewModel
         {
             Message = "Zalogowano pomyślnie!";
             UserLoggedIn?.Invoke(Username);
+
         }
         else
         {

@@ -11,18 +11,22 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using GlassGrid.Models;
 using GlassGrid.ViewModels;
 
 namespace GlassGrid.Views
 {
    
-    public partial class NewGame : Window
+public partial class ChangeUserData : Window
     {
-        public NewGame()
+
+        public ChangeUserDataViewModel ViewModel { get; }
+        public ChangeUserData(IEFUserService userService)
         {
             InitializeComponent();
-            var app = (App)Application.Current;
-            this.DataContext = app.GamePlayVM;
+
+            ViewModel = new ChangeUserDataViewModel(userService);
+            DataContext = ViewModel;
         }
     }
 }
